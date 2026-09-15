@@ -1,10 +1,11 @@
 {
   "schema": "axiomlayer-ripgrep-integration-v1",
-  "revision": 2,
+  "revision": 3,
   "promotion": {
     "candidateId": "fleet-2026-09-14.1",
     "authority": "axiomlayer/dotfiles#49",
     "authorityCommit": "d7a9c4afc1083c17c06a2f82beb63a5d6292dca0",
+    "authorityRuntimeManifestPath": "integration/axiomlayer/authority/dotfiles-runtime-foundation.json",
     "authorityRuntimeManifestSha256": "68ab5f870fbdcf6f21296d75cc9dcf74933b107cc83a1cb4f43b6f9514ff4e8d",
     "forkRepository": "axiomlayer/ripgrep",
     "upstreamRepository": "BurntSushi/ripgrep",

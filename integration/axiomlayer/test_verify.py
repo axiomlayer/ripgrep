@@ -16,6 +16,7 @@ import unittest
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterator
+from unittest import mock
 
 
 HERE = Path(__file__).resolve().parent
@@ -89,6 +90,40 @@ class ContractTests(unittest.TestCase):
 
     def test_manifest_is_complete(self) -> None:
         verify.validate_manifest(self.manifest)
+
+    def test_dotfiles_authority_identity_is_immutable(self) -> None:
+        mutations = {
+            "authority": "axiomlayer/dotfiles#999",
+            "authorityCommit": "0" * 40,
+            "authorityRuntimeManifestPath": "integration/authority.json",
+            "authorityRuntimeManifestSha256": "0" * 64,
+        }
+        for field, value in mutations.items():
+            with self.subTest(field=field):
+                bad = copy.deepcopy(self.manifest)
+                bad["promotion"][field] = value
+                with self.assertRaisesRegex(
+                    verify.VerificationError, "authority|runtime manifest"
+                ):
+                    verify.validate_manifest(bad)
+
+    def test_vendored_dotfiles_authority_binds_every_ripgrep_pin(self) -> None:
+        verify.verify_authority_manifest(self.manifest)
+        bad = copy.deepcopy(self.manifest)
+        bad["targets"]["windows-aarch64"]["archiveSha256"] = "0" * 64
+        with self.assertRaisesRegex(verify.VerificationError, "diverges"):
+            verify.verify_authority_manifest(bad)
+
+    def test_vendored_dotfiles_authority_tamper_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = verify.REPOSITORY_ROOT / verify.AUTHORITY_RUNTIME_MANIFEST
+            destination = root / verify.AUTHORITY_RUNTIME_MANIFEST
+            destination.parent.mkdir(parents=True)
+            shutil.copy2(source, destination)
+            destination.write_bytes(destination.read_bytes() + b"\n")
+            with self.assertRaisesRegex(verify.VerificationError, "digest drifted"):
+                verify.verify_authority_manifest(self.manifest, root)
 
     def test_manifest_refuses_extra_fields_and_target_metadata_drift(self) -> None:
         bad = copy.deepcopy(self.manifest)
@@ -536,6 +571,32 @@ class ContractTests(unittest.TestCase):
             with self.subTest(message=message):
                 self.assert_workflow_rejected(candidate, message)
 
+    def test_matrix_build_modes_cannot_green_skip_source_builds(self) -> None:
+        candidate = self.workflow.replace(
+            "build_mode: nix-native", "build_mode: skip-source-build", 1
+        )
+        rehashed = copy.deepcopy(self.manifest)
+        rehashed["workflowFirewall"]["activeWorkflow"]["sha256"] = hashlib.sha256(
+            candidate.encode("utf-8")
+        ).hexdigest()
+        with self.assertRaisesRegex(
+            verify.VerificationError, "build mode.*matrix drifted"
+        ):
+            verify.verify_integration_workflow(rehashed, candidate)
+
+    def test_source_build_step_conditions_are_exact(self) -> None:
+        candidate = self.workflow.replace(
+            "if: matrix.build_mode == 'nix-native'",
+            "if: matrix.build_mode == 'never-build'",
+            1,
+        )
+        rehashed = copy.deepcopy(self.manifest)
+        rehashed["workflowFirewall"]["activeWorkflow"]["sha256"] = hashlib.sha256(
+            candidate.encode("utf-8")
+        ).hexdigest()
+        with self.assertRaisesRegex(verify.VerificationError, "step conditions"):
+            verify.verify_integration_workflow(rehashed, candidate)
+
     def test_dirty_checkout_is_refused(self) -> None:
         for replacement in ("", "          clean: false\n"):
             with self.subTest(replacement=replacement.strip() or "missing"):
@@ -700,6 +761,50 @@ class ContractTests(unittest.TestCase):
             binary.write_bytes(b"tampered binary")
             with self.assertRaises(verify.VerificationError):
                 verify.assert_file_digest(binary, "f" * 64, "binary")
+
+    def test_download_is_streamed_under_the_reviewed_byte_bound(self) -> None:
+        class Response(io.BytesIO):
+            def __init__(self, payload: bytes, content_length: str | None = None):
+                super().__init__(payload)
+                self.headers = {}
+                if content_length is not None:
+                    self.headers["Content-Length"] = content_length
+
+        cases = (
+            (b"exact", 5, "5", False),
+            (b"too-large", 5, None, True),
+            (b"tiny", 5, None, True),
+            (b"exact", 5, "6", True),
+        )
+        for payload, expected, content_length, rejected in cases:
+            with self.subTest(
+                payload=payload,
+                expected=expected,
+                content_length=content_length,
+            ), tempfile.TemporaryDirectory() as temporary:
+                destination = Path(temporary) / "artifact"
+                response = Response(payload, content_length)
+                with mock.patch.object(
+                    verify.urllib.request, "urlopen", return_value=response
+                ):
+                    if rejected:
+                        with self.assertRaises(verify.VerificationError):
+                            verify.download(
+                                "https://example.invalid/artifact",
+                                destination,
+                                expected,
+                            )
+                        self.assertFalse(destination.exists())
+                        self.assertFalse(
+                            destination.with_suffix(".partial").exists()
+                        )
+                    else:
+                        verify.download(
+                            "https://example.invalid/artifact",
+                            destination,
+                            expected,
+                        )
+                        self.assertEqual(destination.read_bytes(), payload)
 
     def test_archive_path_traversal_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

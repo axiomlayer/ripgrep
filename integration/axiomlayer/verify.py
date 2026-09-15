@@ -24,6 +24,13 @@ from typing import Any
 HERE = Path(__file__).resolve().parent
 REPOSITORY_ROOT = HERE.parents[1]
 DEFAULT_MANIFEST = HERE / "ripgrep-15.2.0.json"
+AUTHORITY_RUNTIME_MANIFEST = Path(
+    "integration/axiomlayer/authority/dotfiles-runtime-foundation.json"
+)
+EXPECTED_AUTHORITY_COMMIT = "d7a9c4afc1083c17c06a2f82beb63a5d6292dca0"
+EXPECTED_AUTHORITY_RUNTIME_SHA256 = (
+    "68ab5f870fbdcf6f21296d75cc9dcf74933b107cc83a1cb4f43b6f9514ff4e8d"
+)
 INTEGRATION_WORKFLOW = Path(".github/workflows/axiomlayer-integration.yml")
 FORK_REPOSITORY = "axiomlayer/ripgrep"
 FORK_DEFAULT_BRANCH = "master"
@@ -132,6 +139,32 @@ EXPECTED_MATRIX_RUNNERS = (
     "windows-11-arm",
     "windows-2025",
 )
+EXPECTED_MATRIX_BLOCK = """      matrix:
+        include:
+          - target: darwin-aarch64
+            runner: macos-15
+            build_mode: nix-native
+            nix_system: aarch64-darwin
+          - target: darwin-x86_64
+            runner: macos-15-intel
+            build_mode: nix-native
+            nix_system: x86_64-darwin
+          - target: linux-aarch64
+            runner: ubuntu-24.04-arm
+            build_mode: nix-native
+            nix_system: aarch64-linux
+          - target: linux-x86_64
+            runner: ubuntu-24.04
+            build_mode: nix-native
+            nix_system: x86_64-linux
+          - target: windows-aarch64
+            runner: windows-11-arm
+            build_mode: cargo-native
+            nix_system: unsupported
+          - target: windows-x86_64
+            runner: windows-2025
+            build_mode: cargo-native
+            nix_system: unsupported"""
 EXPECTED_TRIGGER_BLOCK = """on:
   pull_request:
     branches:
@@ -402,7 +435,7 @@ def validate_manifest(manifest: dict[str, Any]) -> None:
         manifest.get("schema") == "axiomlayer-ripgrep-integration-v1",
         "unexpected manifest schema",
     )
-    require(manifest.get("revision") == 2, "unexpected manifest revision")
+    require(manifest.get("revision") == 3, "unexpected manifest revision")
     promotion = manifest.get("promotion")
     require(isinstance(promotion, dict), "promotion must be an object")
     require(
@@ -411,6 +444,7 @@ def validate_manifest(manifest: dict[str, Any]) -> None:
             "candidateId",
             "authority",
             "authorityCommit",
+            "authorityRuntimeManifestPath",
             "authorityRuntimeManifestSha256",
             "forkRepository",
             "upstreamRepository",
@@ -434,13 +468,22 @@ def validate_manifest(manifest: dict[str, Any]) -> None:
     require(promotion.get("version") == "15.2.0", "version must be 15.2.0")
     require(promotion.get("tag") == "15.2.0", "tag must be 15.2.0")
     require(
-        HEX_COMMIT.fullmatch(str(promotion.get("authorityCommit", ""))) is not None,
-        "Dotfiles authority commit must be full",
+        promotion.get("authority") == "axiomlayer/dotfiles#49",
+        "Dotfiles authority pull request drifted",
     )
     require(
-        HEX_SHA256.fullmatch(str(promotion.get("authorityRuntimeManifestSha256", "")))
-        is not None,
-        "Dotfiles runtime manifest digest must be SHA-256",
+        promotion.get("authorityCommit") == EXPECTED_AUTHORITY_COMMIT,
+        "Dotfiles authority commit drifted",
+    )
+    require(
+        promotion.get("authorityRuntimeManifestPath")
+        == AUTHORITY_RUNTIME_MANIFEST.as_posix(),
+        "Dotfiles authority manifest path drifted",
+    )
+    require(
+        promotion.get("authorityRuntimeManifestSha256")
+        == EXPECTED_AUTHORITY_RUNTIME_SHA256,
+        "Dotfiles runtime manifest digest drifted",
     )
     require(
         HEX_COMMIT.fullmatch(str(promotion.get("commit", ""))) is not None,
@@ -615,8 +658,73 @@ def validate_manifest(manifest: dict[str, Any]) -> None:
     )
 
 
+def verify_authority_manifest(
+    manifest: dict[str, Any], root: Path = REPOSITORY_ROOT
+) -> None:
+    """Bind this lane to the reviewed Dotfiles runtime authority object."""
+
+    promotion = manifest["promotion"]
+    authority_path = root / AUTHORITY_RUNTIME_MANIFEST
+    require(
+        authority_path.is_file() and not authority_path.is_symlink(),
+        "vendored Dotfiles authority manifest is missing or linked",
+    )
+    payload = authority_path.read_bytes()
+    actual_digest = hashlib.sha256(payload).hexdigest()
+    require(
+        actual_digest == EXPECTED_AUTHORITY_RUNTIME_SHA256
+        and actual_digest == promotion["authorityRuntimeManifestSha256"],
+        "vendored Dotfiles authority manifest digest drifted",
+    )
+    try:
+        authority = json.loads(
+            payload.decode("utf-8"), object_pairs_hook=reject_duplicate_json_keys
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise VerificationError(
+            f"cannot parse vendored Dotfiles authority manifest: {error}"
+        ) from error
+    require(isinstance(authority, dict), "Dotfiles authority root must be an object")
+    require(
+        authority.get("schema") == "axiom-fleet-runtime-foundation-v1"
+        and authority.get("revision") == 1,
+        "Dotfiles authority schema or revision drifted",
+    )
+    require(
+        authority.get("deliveryOrigin") == "https://install.axiomlayer.com",
+        "Dotfiles authority delivery origin drifted",
+    )
+    runtimes = authority.get("runtimes")
+    require(isinstance(runtimes, dict), "Dotfiles authority runtimes are missing")
+    ripgrep = runtimes.get("ripgrep")
+    require(isinstance(ripgrep, dict), "Dotfiles authority ripgrep pin is missing")
+    require(
+        ripgrep.get("version") == promotion["version"]
+        and ripgrep.get("binary") == "rg",
+        "Dotfiles authority ripgrep identity drifted",
+    )
+    assets = ripgrep.get("assets")
+    require(
+        isinstance(assets, dict) and set(assets) == EXPECTED_TARGETS,
+        "Dotfiles authority ripgrep target set drifted",
+    )
+    for target, spec in manifest["targets"].items():
+        asset = assets[target]
+        require(isinstance(asset, dict), f"{target}: authority asset must be an object")
+        expected_format = "zip" if target.startswith("windows-") else "tar.gz"
+        require(
+            asset.get("format") == expected_format
+            and asset.get("strip") == spec["archiveRoot"]
+            and asset.get("url") == spec["promotionUrl"]
+            and asset.get("sha256") == spec["archiveSha256"]
+            and asset.get("binarySha256") == spec["binarySha256"],
+            f"{target}: candidate pin diverges from Dotfiles authority",
+        )
+
+
 def verify_source(manifest: dict[str, Any], root: Path = REPOSITORY_ROOT) -> None:
     validate_manifest(manifest)
+    verify_authority_manifest(manifest, root)
     promotion = manifest["promotion"]
     commit = promotion["commit"]
     baseline = promotion["upstreamBaselineCommit"]
@@ -925,6 +1033,27 @@ def verify_integration_workflow(
         matrix_runners == EXPECTED_MATRIX_RUNNERS,
         "integration workflow changed its exact hosted runner matrix",
     )
+    native_block = blocks["native-build-test"]
+    matrix_start = native_block.find("      matrix:\n")
+    runs_on_start = native_block.find("    runs-on:", matrix_start)
+    require(
+        matrix_start >= 0
+        and runs_on_start > matrix_start
+        and native_block[matrix_start:runs_on_start].rstrip()
+        == EXPECTED_MATRIX_BLOCK,
+        "integration workflow target, runner, build mode, or Nix system matrix drifted",
+    )
+    expected_build_conditions = [
+        "matrix.build_mode == 'nix-native'",
+        "matrix.build_mode == 'nix-native'",
+        "matrix.build_mode == 'cargo-native'",
+        "matrix.build_mode == 'cargo-native'",
+    ]
+    require(
+        re.findall(r"(?m)^        if:\s*(matrix\.build_mode.*?)\s*$", native_block)
+        == expected_build_conditions,
+        "native source-build step conditions drifted",
+    )
     require(
         "-latest" not in normalized,
         "integration workflow uses a floating hosted runner image",
@@ -1150,6 +1279,7 @@ def verify_active_workflow_set(manifest: dict[str, Any], root: Path) -> Path:
 
 def verify_workflows(manifest: dict[str, Any], root: Path = REPOSITORY_ROOT) -> None:
     validate_manifest(manifest)
+    verify_authority_manifest(manifest, root)
     integration_path = verify_active_workflow_set(manifest, root)
     workflow_paths = [integration_path]
     expected_actions = manifest["workflowActions"]
@@ -1332,7 +1462,11 @@ def extract_archive(archive: Path, destination: Path) -> None:
     raise VerificationError(f"unsupported archive format: {archive.name}")
 
 
-def download(url: str, destination: Path) -> None:
+def download(url: str, destination: Path, expected_bytes: int) -> None:
+    require(
+        type(expected_bytes) is int and expected_bytes > 0,
+        "download byte bound must be a positive integer",
+    )
     request = urllib.request.Request(
         url, headers={"User-Agent": "axiomlayer-ripgrep-ci/1"}
     )
@@ -1344,7 +1478,34 @@ def download(url: str, destination: Path) -> None:
             urllib.request.urlopen(request, timeout=90) as response,
             partial.open("wb") as output,
         ):
-            shutil.copyfileobj(response, output)
+            content_length = response.headers.get("Content-Length")
+            if content_length is not None:
+                try:
+                    declared_bytes = int(content_length)
+                except ValueError as error:
+                    raise VerificationError(
+                        "download Content-Length is not an integer"
+                    ) from error
+                require(
+                    declared_bytes == expected_bytes,
+                    "download Content-Length does not match the reviewed byte count",
+                )
+            written = 0
+            while True:
+                read_size = min(1024 * 1024, expected_bytes - written + 1)
+                chunk = response.read(read_size)
+                if not chunk:
+                    break
+                written += len(chunk)
+                require(
+                    written <= expected_bytes,
+                    "download exceeded the reviewed byte count",
+                )
+                output.write(chunk)
+            require(
+                written == expected_bytes,
+                "download size does not match the reviewed byte count",
+            )
         os.replace(partial, destination)
     except Exception:
         if partial.exists():
@@ -1376,6 +1537,7 @@ def verify_asset(
     receipt_path: Path | None = None,
 ) -> dict[str, Any]:
     validate_manifest(manifest)
+    verify_authority_manifest(manifest)
     require(target in manifest["targets"], f"unknown target: {target}")
     spec = manifest["targets"][target]
     directory.mkdir(parents=True, exist_ok=True)
@@ -1386,7 +1548,7 @@ def verify_asset(
     archive = directory / spec["archiveName"]
     require(not archive.is_symlink(), f"{target}: archive cache entry is linked")
     if not archive.exists() or sha256_file(archive) != spec["archiveSha256"]:
-        download(spec["archiveUrl"], archive)
+        download(spec["archiveUrl"], archive, spec["archiveBytes"])
     require(
         archive.stat().st_size == spec["archiveBytes"],
         f"{target}: archive size mismatch",
@@ -1484,6 +1646,7 @@ def main(argv: list[str] | None = None) -> int:
         manifest = load_manifest(args.manifest)
         if args.command == "validate":
             validate_manifest(manifest)
+            verify_authority_manifest(manifest)
         elif args.command == "verify-source":
             verify_source(manifest)
         elif args.command == "verify-workflows":
