@@ -1,0 +1,200 @@
+{
+  "schema": "axiomlayer-ripgrep-integration-v1",
+  "revision": 2,
+  "promotion": {
+    "candidateId": "fleet-2026-09-14.1",
+    "authority": "axiomlayer/dotfiles#49",
+    "authorityCommit": "d7a9c4afc1083c17c06a2f82beb63a5d6292dca0",
+    "authorityRuntimeManifestSha256": "68ab5f870fbdcf6f21296d75cc9dcf74933b107cc83a1cb4f43b6f9514ff4e8d",
+    "forkRepository": "axiomlayer/ripgrep",
+    "upstreamRepository": "BurntSushi/ripgrep",
+    "upstreamBaselineCommit": "3fce3b5bb0236da2df6d99672afb8a719642eca7",
+    "commit": "e89fff89ac9af12e8d4ce9d5fd07beb408ca730f",
+    "tag": "15.2.0",
+    "version": "15.2.0",
+    "rustToolchain": "1.85.0",
+    "deliveryOrigin": "https://install.axiomlayer.com/runtime/ripgrep/15.2.0"
+  },
+  "workflowActions": {
+    "actions/checkout": "3d3c42e5aac5ba805825da76410c181273ba90b1",
+    "dtolnay/rust-toolchain": "02cb101ec7c40f2c49e1d9714d64511d8e1b74de"
+  },
+  "workflowFirewall": {
+    "activeWorkflow": {
+      "path": ".github/workflows/axiomlayer-integration.yml",
+      "sha256": "c6becc742d875ce071b43cd548c521214a9b8f1b106a59c6d2faefc6107a23aa"
+    },
+    "upstreamArchive": {
+      "repository": "BurntSushi/ripgrep",
+      "commit": "3fce3b5bb0236da2df6d99672afb8a719642eca7",
+      "sourceRoots": [
+        ".github/workflows",
+        "ci"
+      ],
+      "archiveRoot": "integration/axiomlayer/upstream-workflows",
+      "files": [
+        {
+          "sourcePath": ".github/workflows/ci.yml",
+          "archivePath": "integration/axiomlayer/upstream-workflows/.github/workflows/ci.yml",
+          "gitMode": "100644",
+          "sha256": "85c6fc84f7bf520a0c3230ec3c705ba4aec451e4a064f0278d9589e991db6715"
+        },
+        {
+          "sourcePath": ".github/workflows/release.yml",
+          "archivePath": "integration/axiomlayer/upstream-workflows/.github/workflows/release.yml",
+          "gitMode": "100644",
+          "sha256": "e4725d2699337b8f33cda378c9085a8eb83f85b60fd7cb08a412e0a5c1ebe3be"
+        },
+        {
+          "sourcePath": "ci/sha256-releases",
+          "archivePath": "integration/axiomlayer/upstream-workflows/ci/sha256-releases",
+          "gitMode": "100755",
+          "sha256": "77f61ae7aa9bcfcce1bfaaf83c437746ab55fecbcf49d79869582806f1ee242c"
+        },
+        {
+          "sourcePath": "ci/test-complete",
+          "archivePath": "integration/axiomlayer/upstream-workflows/ci/test-complete",
+          "gitMode": "100755",
+          "sha256": "56f7f0a9c213f00e98b15f0235913378a77ad2ab0c73c16004779e6366c945c6"
+        },
+        {
+          "sourcePath": "ci/ubuntu-install-packages",
+          "archivePath": "integration/axiomlayer/upstream-workflows/ci/ubuntu-install-packages",
+          "gitMode": "100755",
+          "sha256": "a21bcc62e1937248e96c21b4cf1dbdad991e48fdafa8cefc584e7114ff5b3920"
+        },
+        {
+          "sourcePath": "ci/utils.sh",
+          "archivePath": "integration/axiomlayer/upstream-workflows/ci/utils.sh",
+          "gitMode": "100644",
+          "sha256": "0a2632e085b2f2a4bca4024320010fb756d9782e26809efd0c243b4265530e1f"
+        }
+      ]
+    }
+  },
+  "nix": {
+    "version": "2.35.2",
+    "installerUrl": "https://releases.nixos.org/nix/nix-2.35.2/install",
+    "installerSha256": "9adda97297d9e8ab360df95c729eabff4f4f93d6db091953c3a68f29e3fb130c",
+    "wrapperSha256": "4b8c7ba5d229ad75d19ffed8b7b3330185ebd049f3aa2a27e106d187ad7ef2aa",
+    "expressionSha256": "557c2cbbee6e5fa25eff7923b3c13057d39a1c334fb5894f4901e877f944eda3",
+    "binaryTarballSha256": {
+      "aarch64-darwin": "1695c13aba5afa7c2ecd6dc4a9393f602e7bbc440ed45e81602c831546580ec3",
+      "x86_64-darwin": "d725518d89f3b0b8d4af702a9d38d519814014cbe125afb3ed0545c9d755f6a5",
+      "aarch64-linux": "4d0302a2910f5eec1c33b8deef634f04899a75737e7001ec49908d003ae5efda",
+      "x86_64-linux": "0c3960a9792331a22081c3c7a5d8465db9b17c50b3acdf18587fa4c6f2cb1158"
+    },
+    "nixpkgs": {
+      "repository": "NixOS/nixpkgs",
+      "role": "build-only input pending its own AxiomLayer integration lane",
+      "commit": "c3eea5b2156db11c7eeeada3dc737711255b253e",
+      "url": "https://github.com/NixOS/nixpkgs/archive/c3eea5b2156db11c7eeeada3dc737711255b253e.tar.gz",
+      "narHash": "sha256-vdhpDJ3Lr24lkZ+fDCjmBRRtw9/vcSzkqGJOJyF5h2U="
+    },
+    "systems": [
+      "aarch64-darwin",
+      "aarch64-linux",
+      "x86_64-darwin",
+      "x86_64-linux"
+    ]
+  },
+  "credentials": {
+    "required": [],
+    "fabricated": [],
+    "statement": "ripgrep integration requires no configured credentials or secrets; the automatic token is limited to contents:read and every checkout disables persisted credentials"
+  },
+  "targets": {
+    "darwin-aarch64": {
+      "runner": "macos-15",
+      "nixSystem": "aarch64-darwin",
+      "buildMode": "nix-native",
+      "archiveName": "ripgrep-15.2.0-aarch64-apple-darwin.tar.gz",
+      "archiveBytes": 1764284,
+      "archiveUrl": "https://github.com/BurntSushi/ripgrep/releases/download/15.2.0/ripgrep-15.2.0-aarch64-apple-darwin.tar.gz",
+      "promotionUrl": "https://install.axiomlayer.com/runtime/ripgrep/15.2.0/ripgrep-aarch64-apple-darwin.tar.gz",
+      "archiveSha256": "3750b2e93f37e0c692657da574d7019a101c0084da05a790c83fd335bad973e4",
+      "archiveRoot": "ripgrep-15.2.0-aarch64-apple-darwin",
+      "binary": "rg",
+      "binarySha256": "a326a1fb48074202e9ad41e4cd1e389eeea372c8c6f7d7e80da81176d5d9430e"
+    },
+    "darwin-x86_64": {
+      "runner": "macos-15-intel",
+      "nixSystem": "x86_64-darwin",
+      "buildMode": "nix-native",
+      "archiveName": "ripgrep-15.2.0-x86_64-apple-darwin.tar.gz",
+      "archiveBytes": 1878284,
+      "archiveUrl": "https://github.com/BurntSushi/ripgrep/releases/download/15.2.0/ripgrep-15.2.0-x86_64-apple-darwin.tar.gz",
+      "promotionUrl": "https://install.axiomlayer.com/runtime/ripgrep/15.2.0/ripgrep-x86_64-apple-darwin.tar.gz",
+      "archiveSha256": "af7825fcc69a2afc7a7aea55fc9af90e26421d8f20fe59df32e233c0b8a231c1",
+      "archiveRoot": "ripgrep-15.2.0-x86_64-apple-darwin",
+      "binary": "rg",
+      "binarySha256": "0c9a0066db0d26b640777db88045b0ccdd58509a746700e43e1c4ff8707a5ed0"
+    },
+    "linux-aarch64": {
+      "runner": "ubuntu-24.04-arm",
+      "nixSystem": "aarch64-linux",
+      "buildMode": "nix-native",
+      "archiveName": "ripgrep-15.2.0-aarch64-unknown-linux-gnu.tar.gz",
+      "archiveBytes": 1854661,
+      "archiveUrl": "https://github.com/BurntSushi/ripgrep/releases/download/15.2.0/ripgrep-15.2.0-aarch64-unknown-linux-gnu.tar.gz",
+      "promotionUrl": "https://install.axiomlayer.com/runtime/ripgrep/15.2.0/ripgrep-aarch64-linux-gnu.tar.gz",
+      "archiveSha256": "a740b91c82eaf9914cfedd353572f2791cbe0162c84101ee0951058f4dcbc90d",
+      "archiveRoot": "ripgrep-15.2.0-aarch64-unknown-linux-gnu",
+      "binary": "rg",
+      "binarySha256": "e36d0eb52e70696bdf1781392722e05a21bb91d3b7b762ef5ec20e5df2ec687b"
+    },
+    "linux-x86_64": {
+      "runner": "ubuntu-24.04",
+      "nixSystem": "x86_64-linux",
+      "buildMode": "nix-native",
+      "archiveName": "ripgrep-15.2.0-x86_64-unknown-linux-musl.tar.gz",
+      "archiveBytes": 2265718,
+      "archiveUrl": "https://github.com/BurntSushi/ripgrep/releases/download/15.2.0/ripgrep-15.2.0-x86_64-unknown-linux-musl.tar.gz",
+      "promotionUrl": "https://install.axiomlayer.com/runtime/ripgrep/15.2.0/ripgrep-x86_64-linux-musl.tar.gz",
+      "archiveSha256": "33e15bcf1624b25cdd2a55813a47a2f95dbe126268203e76aa6a585d1e7b149c",
+      "archiveRoot": "ripgrep-15.2.0-x86_64-unknown-linux-musl",
+      "binary": "rg",
+      "binarySha256": "e62198eb19b136b88c330af83647b5a962cb99b6b1f066758568f12de1974849"
+    },
+    "windows-aarch64": {
+      "runner": "windows-11-arm",
+      "nixSystem": null,
+      "buildMode": "cargo-native",
+      "archiveName": "ripgrep-15.2.0-aarch64-pc-windows-msvc.zip",
+      "archiveBytes": 1640124,
+      "archiveUrl": "https://github.com/BurntSushi/ripgrep/releases/download/15.2.0/ripgrep-15.2.0-aarch64-pc-windows-msvc.zip",
+      "promotionUrl": "https://install.axiomlayer.com/runtime/ripgrep/15.2.0/ripgrep-aarch64-windows-msvc.zip",
+      "archiveSha256": "e4abca10c3a64ebea742667dd7009449d49403db5460dd6873e389fa2945360f",
+      "archiveRoot": "ripgrep-15.2.0-aarch64-pc-windows-msvc",
+      "binary": "rg.exe",
+      "binarySha256": "d33a29a9ef03c9f4c03be9e8d88498e6e2d2e566d64cdbdef97f9afc8f13120c"
+    },
+    "windows-x86_64": {
+      "runner": "windows-2025",
+      "nixSystem": null,
+      "buildMode": "cargo-native",
+      "archiveName": "ripgrep-15.2.0-x86_64-pc-windows-msvc.zip",
+      "archiveBytes": 1789611,
+      "archiveUrl": "https://github.com/BurntSushi/ripgrep/releases/download/15.2.0/ripgrep-15.2.0-x86_64-pc-windows-msvc.zip",
+      "promotionUrl": "https://install.axiomlayer.com/runtime/ripgrep/15.2.0/ripgrep-x86_64-windows-msvc.zip",
+      "archiveSha256": "71b2fef860abe467217a538ff31de02f5258807c0129f771846f87bd029aafc5",
+      "archiveRoot": "ripgrep-15.2.0-x86_64-pc-windows-msvc",
+      "binary": "rg.exe",
+      "binarySha256": "14231169855ec5205cf5a1b6f1db358ff4aed4247c86b69ce8aae647c77f6680"
+    }
+  },
+  "unsupportedHostedProof": [
+    {
+      "capability": "native-nix",
+      "targets": ["windows-aarch64", "windows-x86_64"],
+      "status": "unsupported",
+      "reason": "Nix has no supported native Windows runtime; the same pinned source is built and tested there with locked Cargo on native GitHub-hosted runners"
+    },
+    {
+      "capability": "native-wsl",
+      "targets": ["wsl-aarch64", "wsl-x86_64"],
+      "status": "hardware-required",
+      "reason": "GitHub provides native Linux and native Windows runners but no WSL runner; WSL proof remains a downstream Ocelot/Siberian hardware-acceptance receipt using the matching Linux artifact"
+    }
+  ]
+}
