@@ -1,0 +1,234 @@
+name: axiomlayer-ripgrep-integration
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: axiomlayer-ripgrep-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  contract-and-integrity:
+    name: contract and all artifact digests
+    if: >-
+      github.repository == 'axiomlayer/ripgrep' &&
+      github.event.repository.default_branch == 'master' &&
+      ((github.event_name == 'pull_request' &&
+      github.event.pull_request.base.repo.full_name == 'axiomlayer/ripgrep' &&
+      github.event.pull_request.head.repo.full_name == 'axiomlayer/ripgrep' &&
+      github.base_ref == 'master' &&
+      github.ref == format('refs/pull/{0}/merge', github.event.number) &&
+      github.workflow_ref == format('axiomlayer/ripgrep/.github/workflows/axiomlayer-integration.yml@refs/pull/{0}/merge', github.event.number)) ||
+      (github.event_name == 'push' &&
+      github.ref == 'refs/heads/master' &&
+      github.ref_protected == true &&
+      github.workflow_ref == 'axiomlayer/ripgrep/.github/workflows/axiomlayer-integration.yml@refs/heads/master') ||
+      (github.event_name == 'schedule' &&
+      github.ref == 'refs/heads/master' &&
+      github.ref_protected == true &&
+      github.workflow_ref == 'axiomlayer/ripgrep/.github/workflows/axiomlayer-integration.yml@refs/heads/master') ||
+      (github.event_name == 'workflow_dispatch' &&
+      github.ref == 'refs/heads/master' &&
+      github.ref_protected == true &&
+      github.workflow_ref == 'axiomlayer/ripgrep/.github/workflows/axiomlayer-integration.yml@refs/heads/master'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out the fork with promoted history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          clean: true
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.sha }}
+
+      - name: Verify manifest, source, action pins, and workflow firewall
+        run: |
+          python3 integration/axiomlayer/verify.py validate
+          python3 integration/axiomlayer/verify.py verify-source
+          python3 integration/axiomlayer/verify.py verify-workflows
+          python3 -m unittest -v integration/axiomlayer/test_verify.py
+
+      - name: Verify every archive and extracted binary digest
+        run: |
+          python3 integration/axiomlayer/verify.py verify-all-assets \
+            --directory "$RUNNER_TEMP/ripgrep-assets"
+
+  native-build-test:
+    name: ${{ matrix.target }} / ${{ matrix.build_mode }}
+    needs: contract-and-integrity
+    if: >-
+      github.repository == 'axiomlayer/ripgrep' &&
+      github.event.repository.default_branch == 'master' &&
+      ((github.event_name == 'pull_request' &&
+      github.event.pull_request.base.repo.full_name == 'axiomlayer/ripgrep' &&
+      github.event.pull_request.head.repo.full_name == 'axiomlayer/ripgrep' &&
+      github.base_ref == 'master' &&
+      github.ref == format('refs/pull/{0}/merge', github.event.number) &&
+      github.workflow_ref == format('axiomlayer/ripgrep/.github/workflows/axiomlayer-integration.yml@refs/pull/{0}/merge', github.event.number)) ||
+      (github.event_name == 'push' &&
+      github.ref == 'refs/heads/master' &&
+      github.ref_protected == true &&
+      github.workflow_ref == 'axiomlayer/ripgrep/.github/workflows/axiomlayer-integration.yml@refs/heads/master') ||
+      (github.event_name == 'schedule' &&
+      github.ref == 'refs/heads/master' &&
+      github.ref_protected == true &&
+      github.workflow_ref == 'axiomlayer/ripgrep/.github/workflows/axiomlayer-integration.yml@refs/heads/master') ||
+      (github.event_name == 'workflow_dispatch' &&
+      github.ref == 'refs/heads/master' &&
+      github.ref_protected == true &&
+      github.workflow_ref == 'axiomlayer/ripgrep/.github/workflows/axiomlayer-integration.yml@refs/heads/master'))
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: darwin-aarch64
+            runner: macos-15
+            build_mode: nix-native
+            nix_system: aarch64-darwin
+          - target: darwin-x86_64
+            runner: macos-15-intel
+            build_mode: nix-native
+            nix_system: x86_64-darwin
+          - target: linux-aarch64
+            runner: ubuntu-24.04-arm
+            build_mode: nix-native
+            nix_system: aarch64-linux
+          - target: linux-x86_64
+            runner: ubuntu-24.04
+            build_mode: nix-native
+            nix_system: x86_64-linux
+          - target: windows-aarch64
+            runner: windows-11-arm
+            build_mode: cargo-native
+            nix_system: unsupported
+          - target: windows-x86_64
+            runner: windows-2025
+            build_mode: cargo-native
+            nix_system: unsupported
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    steps:
+      - name: Check out the fork with promoted history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          clean: true
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.sha }}
+
+      - name: Verify and materialize the promoted revision
+        shell: bash
+        run: |
+          python3 integration/axiomlayer/verify.py verify-source
+          python3 integration/axiomlayer/verify.py materialize-source \
+            --destination "$RUNNER_TEMP/ripgrep-source"
+
+      - name: Install pinned Nix without credentials
+        if: matrix.build_mode == 'nix-native'
+        shell: bash
+        run: |
+          /bin/mkdir -p "$RUNNER_TEMP/nix-bootstrap-home"
+          /usr/bin/env -i \
+            CI=true \
+            GITHUB_PATH="$GITHUB_PATH" \
+            HOME="$RUNNER_TEMP/nix-bootstrap-home" \
+            PATH="/usr/bin:/bin:/usr/sbin:/sbin" \
+            TMPDIR="$RUNNER_TEMP" \
+            /bin/sh integration/axiomlayer/install-nix-ci.sh
+
+      - name: Build and test the promoted source with pinned Nixpkgs
+        if: matrix.build_mode == 'nix-native'
+        shell: bash
+        run: |
+          /bin/mkdir -p \
+            "$RUNNER_TEMP/nix-build-home" \
+            "$RUNNER_TEMP/nix-build-tmp"
+          test "$(/nix/var/nix/profiles/default/bin/nix --version)" = "nix (Nix) 2.35.2"
+          /usr/bin/env -i \
+            CI=true \
+            HOME="$RUNNER_TEMP/nix-build-home" \
+            PATH="/nix/var/nix/profiles/default/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+            TMPDIR="$RUNNER_TEMP/nix-build-tmp" \
+            /nix/var/nix/profiles/default/bin/nix-build integration/axiomlayer/default.nix \
+            --arg src "$RUNNER_TEMP/ripgrep-source" \
+            --argstr system "${{ matrix.nix_system }}" \
+            --no-out-link
+
+      - name: Install the upstream-compatible Rust toolchain
+        if: matrix.build_mode == 'cargo-native'
+        uses: dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de
+        with:
+          toolchain: 1.85.0
+
+      - name: Build and test the promoted source with locked Cargo
+        if: matrix.build_mode == 'cargo-native'
+        shell: bash
+        working-directory: ${{ runner.temp }}/ripgrep-source
+        run: |
+          cargo test --locked --workspace --features pcre2
+          cargo build --locked --profile release-lto --features pcre2
+
+      - name: Verify and execute the matching upstream binary
+        shell: bash
+        run: |
+          python3 integration/axiomlayer/verify.py verify-asset \
+            --target "${{ matrix.target }}" \
+            --directory "$RUNNER_TEMP/ripgrep-assets" \
+            --execute \
+            --receipt "$RUNNER_TEMP/${{ matrix.target }}-receipt.json"
+
+  promotion-gate:
+    name: promotion gate (build/test only)
+    if: always()
+    needs:
+      - contract-and-integrity
+      - native-build-test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require every hosted proof
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          AXIOM_REPOSITORY: ${{ github.repository }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          BASE_REPOSITORY: ${{ github.event.pull_request.base.repo.full_name }}
+          HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          BASE_REF: ${{ github.base_ref }}
+          REF: ${{ github.ref }}
+          REF_PROTECTED: ${{ github.ref_protected }}
+          WORKFLOW_REF: ${{ github.workflow_ref }}
+          PR_NUMBER: ${{ github.event.number }}
+          CONTRACT_RESULT: ${{ needs.contract-and-integrity.result }}
+          NATIVE_RESULT: ${{ needs.native-build-test.result }}
+        run: |
+          test "$AXIOM_REPOSITORY" = "axiomlayer/ripgrep"
+          test "$DEFAULT_BRANCH" = "master"
+          case "$EVENT_NAME" in
+            pull_request)
+              test "$BASE_REPOSITORY" = "axiomlayer/ripgrep"
+              test "$HEAD_REPOSITORY" = "axiomlayer/ripgrep"
+              test "$BASE_REF" = "master"
+              test "$REF" = "refs/pull/$PR_NUMBER/merge"
+              test "$WORKFLOW_REF" = "axiomlayer/ripgrep/.github/workflows/axiomlayer-integration.yml@refs/pull/$PR_NUMBER/merge"
+              ;;
+            push|schedule|workflow_dispatch)
+              test "$REF" = "refs/heads/master"
+              test "$REF_PROTECTED" = "true"
+              test "$WORKFLOW_REF" = "axiomlayer/ripgrep/.github/workflows/axiomlayer-integration.yml@refs/heads/master"
+              ;;
+            *) exit 1 ;;
+          esac
+          test "$CONTRACT_RESULT" = success
+          test "$NATIVE_RESULT" = success

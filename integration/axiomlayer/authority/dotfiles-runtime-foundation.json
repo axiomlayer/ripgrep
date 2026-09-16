@@ -1,0 +1,386 @@
+{
+  "schema": "axiom-fleet-runtime-foundation-v1",
+  "revision": 1,
+  "deliveryOrigin": "https://install.axiomlayer.com",
+  "nodeDistMirror": "https://install.axiomlayer.com/node-dist/snapshots/2026-09-14",
+  "installOrder": [
+    "deno",
+    "fnm",
+    "node",
+    "pyr",
+    "python",
+    "go",
+    "ripgrep",
+    "sqlite"
+  ],
+  "runtimes": {
+    "deno": {
+      "version": "2.9.6",
+      "binary": "deno",
+      "assets": {
+        "darwin-aarch64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/deno/2.9.6/deno-aarch64-apple-darwin.zip",
+          "sha256": "213a2f304f04d3c9cb5220669afad138f60a5aab1fe80962abdeb8f35807a472",
+          "binarySha256": "b3ac3bd206e48c26026cadd80c1367e96c149f9c66130952382a642b09fa8a71"
+        },
+        "darwin-x86_64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/deno/2.9.6/deno-x86_64-apple-darwin.zip",
+          "sha256": "7d4524b82bcc557fe020a1a5b56956ed42b992ae5b28026e8ad5d17329533f5f",
+          "binarySha256": "ec9fbd8e8f5f6ca5ceb0ebe4a564636f2c698bf60e3187460ded400cc0147fd5"
+        },
+        "linux-aarch64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/deno/2.9.6/deno-aarch64-unknown-linux-gnu.zip",
+          "sha256": "9a46afc6c392c7cd2ff71a31558935545b46408d0e87f7a86908c712721c046e",
+          "binarySha256": "d08d392418df53f4e6e88a08909c0e1bccbf9adcead7232df72b6ad6075ec416"
+        },
+        "linux-x86_64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/deno/2.9.6/deno-x86_64-unknown-linux-gnu.zip",
+          "sha256": "394f07f4da2bebe6ce6f1e7ce0fa16429b29b08c35e3fac3fe25972676dff4b2",
+          "binarySha256": "bceb5b6a6239b0b010418406d8c77a508f67cf4337d94288f1c19fe71304aab0"
+        },
+        "windows-aarch64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/deno/2.9.6/deno-aarch64-pc-windows-msvc.zip",
+          "sha256": "acb014afe2299847764e232b4993e162e3946cdeec36603e3f1a0b548cd1ea55",
+          "binarySha256": "7259fbfaf9fb0d83551b7f85b38b3dc4d7c2c63cf05427b042fbf63bdcb6f778"
+        },
+        "windows-x86_64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/deno/2.9.6/deno-x86_64-pc-windows-msvc.zip",
+          "sha256": "15e5300b0ba3c3695a7621d90160a746ec9e710228cee639afa9d580f6e3cd11",
+          "binarySha256": "2ff9493dfa356be2975f477025ea770088e9e9cb2c83d983236d13561b96b7a6"
+        }
+      }
+    },
+    "fnm": {
+      "version": "1.39.0",
+      "binary": "fnm",
+      "assets": {
+        "darwin-aarch64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/fnm/1.39.0/fnm-macos-universal.zip",
+          "sha256": "f046483e85c53b3278efe49a3620c8680f22efa58a8dabfd03eafc6b59b31a25",
+          "binarySha256": "67b791f7e8e6aad0b29514590f69983ac42099f1ca823d741d8fb63b6c9811e1"
+        },
+        "darwin-x86_64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/fnm/1.39.0/fnm-macos-universal.zip",
+          "sha256": "f046483e85c53b3278efe49a3620c8680f22efa58a8dabfd03eafc6b59b31a25",
+          "binarySha256": "67b791f7e8e6aad0b29514590f69983ac42099f1ca823d741d8fb63b6c9811e1"
+        },
+        "linux-aarch64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/fnm/1.39.0/fnm-linux-arm64.zip",
+          "sha256": "4eaff58b2c5bf30d0934027572dd0b5bbb60d2a1af309230b53662d4b1d45599",
+          "binarySha256": "07db877a26613362227edc9d4bda4d4db092d96274005c644097ebd5d3d97da7"
+        },
+        "linux-x86_64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/fnm/1.39.0/fnm-linux-x86_64.zip",
+          "sha256": "7807664f39d39fc518da1c35ba0181e4b3267603c4b1dedeb4b5fc6ae440a224",
+          "binarySha256": "2b8810b610654de6914a17e3235d3948fbd5c7d4712815ac45724c3f06e8966f"
+        },
+        "windows-aarch64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/fnm/1.39.0/fnm-windows-x86_64.zip",
+          "sha256": "8183bed4348cb78fdfd8abb3d1247fbeab7b2082f941363929c61e747c001e10",
+          "binarySha256": "eaf666df5350bc6b2e74cc866ae52b97d2e6c7b637a33eea8a53186a251eb940",
+          "emulated": true
+        },
+        "windows-x86_64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/fnm/1.39.0/fnm-windows-x86_64.zip",
+          "sha256": "8183bed4348cb78fdfd8abb3d1247fbeab7b2082f941363929c61e747c001e10",
+          "binarySha256": "eaf666df5350bc6b2e74cc866ae52b97d2e6c7b637a33eea8a53186a251eb940"
+        }
+      }
+    },
+    "node": {
+      "version": "24.21.0",
+      "npmVersion": "11.19.0",
+      "assets": {
+        "darwin-aarch64": {
+          "format": "tar.gz",
+          "strip": "node-v24.21.0-darwin-arm64",
+          "url": "https://install.axiomlayer.com/node-dist/snapshots/2026-09-14/v24.21.0/node-v24.21.0-darwin-arm64.tar.gz",
+          "sha256": "bed7eea5325e1108f32ce5228ddd6a5f0f08a499ee42aa7442aea583702f6057",
+          "binarySha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b",
+          "npmTreeSha256": "83f15ebe8a96df2e5cc4c450d0c7258b74cbb5357cf832451e9d9dde3c2dfa73"
+        },
+        "darwin-x86_64": {
+          "format": "tar.gz",
+          "strip": "node-v24.21.0-darwin-x64",
+          "url": "https://install.axiomlayer.com/node-dist/snapshots/2026-09-14/v24.21.0/node-v24.21.0-darwin-x64.tar.gz",
+          "sha256": "1462cb3b3046b815cf8ea436d3da450ec1a9f11dac7e5a46b0ada5305d7e8097",
+          "binarySha256": "7abcf39bd37ab251015337ff75304d7555f0d8e88c6e0fbf04bce8ce34636f49",
+          "npmTreeSha256": "83f15ebe8a96df2e5cc4c450d0c7258b74cbb5357cf832451e9d9dde3c2dfa73"
+        },
+        "linux-aarch64": {
+          "format": "tar.gz",
+          "strip": "node-v24.21.0-linux-arm64",
+          "url": "https://install.axiomlayer.com/node-dist/snapshots/2026-09-14/v24.21.0/node-v24.21.0-linux-arm64.tar.gz",
+          "sha256": "724282c3b43aec998aa9527380465b45d229e021b58035f5f4f63095eabfe5d5",
+          "binarySha256": "0f8949d1028f6d61506b2d5bc57e7e6fe893d7b1997509b7847294fc9c616584",
+          "npmTreeSha256": "83f15ebe8a96df2e5cc4c450d0c7258b74cbb5357cf832451e9d9dde3c2dfa73"
+        },
+        "linux-x86_64": {
+          "format": "tar.gz",
+          "strip": "node-v24.21.0-linux-x64",
+          "url": "https://install.axiomlayer.com/node-dist/snapshots/2026-09-14/v24.21.0/node-v24.21.0-linux-x64.tar.gz",
+          "sha256": "6e1db87ef58b8819e5d5402eff1536491b18edd8eb7bee5ef7897876e88dc5ff",
+          "binarySha256": "7fde7b8afa198da66257f42ee2001d874c7355631e6d1579a5fb5ef1f246df4c",
+          "npmTreeSha256": "83f15ebe8a96df2e5cc4c450d0c7258b74cbb5357cf832451e9d9dde3c2dfa73"
+        },
+        "windows-aarch64": {
+          "format": "zip",
+          "strip": "node-v24.21.0-win-arm64",
+          "url": "https://install.axiomlayer.com/node-dist/snapshots/2026-09-14/v24.21.0/node-v24.21.0-win-arm64.zip",
+          "sha256": "8779b1bde1d39f8d420e3b57aa657b39891af434d3de44a919044cec06785921",
+          "binarySha256": "dff59da18b6ffe1bf1ca99e1d2af4906080c481740619f5b5098c0fca28bd9b7",
+          "npmTreeSha256": "2672b6e00dc2f5b702853c5ec0bd044b38ab1d5011e7782a695e8f933ae1b09c"
+        },
+        "windows-x86_64": {
+          "format": "zip",
+          "strip": "node-v24.21.0-win-x64",
+          "url": "https://install.axiomlayer.com/node-dist/snapshots/2026-09-14/v24.21.0/node-v24.21.0-win-x64.zip",
+          "sha256": "158f7685b44de51f6c0df1d153526cbcd3e1bc739a8dfc607721cef75de9e541",
+          "binarySha256": "ba4e6d110e8c1592a1ecd390f6b05f3da124b13871a5be62b341a07a853c6c32",
+          "npmTreeSha256": "2672b6e00dc2f5b702853c5ec0bd044b38ab1d5011e7782a695e8f933ae1b09c"
+        }
+      }
+    },
+    "pyr": {
+      "version": "0.1.1",
+      "binary": "pyr",
+      "assets": {
+        "darwin-aarch64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/pyr/0.1.1/pyr-darwin-aarch64.zip",
+          "sha256": "9e27afcc86b29efdf4a019b5fbef4a8c65600028041db62b6e32ea4f19d69948",
+          "binarySha256": "2976beee4149db2f95d48b7fab993de56d9102b72b310cd77f444a600ad605c9"
+        },
+        "darwin-x86_64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/pyr/0.1.1/pyr-darwin-x86_64.zip",
+          "sha256": "4dce2d0d39567472e8524e016c8a970a4202ec7e7cf38e6405829a1e95857836",
+          "binarySha256": "8f0e6037915e2476e837211b0b45f89f853039ac3a41e6575f76ce275097bc8c"
+        },
+        "linux-aarch64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/pyr/0.1.1/pyr-linux-aarch64.zip",
+          "sha256": "ef45eea0e60597acdd115d55b52538d33a0fd8866fd60626a399a9a7ac1774d7",
+          "binarySha256": "a9741d7de3879c4d8ee2d41789e0d24c18ae306f059c2bff06517fd8e2cc031a"
+        },
+        "linux-x86_64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/pyr/0.1.1/pyr-linux-x86_64.zip",
+          "sha256": "079401749e96a4634c62cc7d510fc4f0165256d53326626c74427f0d44671d91",
+          "binarySha256": "7b71aa03db7d2d47d190767d7b10bdd6c2931623d2812785c26d124d36b26a56"
+        },
+        "windows-aarch64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/pyr/0.1.1/pyr-windows-aarch64.zip",
+          "sha256": "280cf969731092c95387da2fe43ee607131d381bd53302f08986271b3b6287cf",
+          "binarySha256": "efca0fcddbbb6819d2d6c158dcf7d7de0169876f44f30991833a5c457c9c722b"
+        },
+        "windows-x86_64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/pyr/0.1.1/pyr-windows-x86_64.zip",
+          "sha256": "2fa50b0abf56b5e539537898ec9b70e69dc483a924378826312f6cb7529a3950",
+          "binarySha256": "776ccb6c5a010029ab939b050b246d567521e5ed285e22fdc9a652ddd28d570c"
+        }
+      }
+    },
+    "python": {
+      "version": "3.14.7",
+      "build": "20260901",
+      "assets": {
+        "darwin-aarch64": {
+          "format": "tar.gz",
+          "strip": "python",
+          "url": "https://install.axiomlayer.com/runtime/python/3.14.7+20260901/cpython-aarch64-apple-darwin-install_only.tar.gz",
+          "sha256": "30daa970c7d223530120f1693cd3c6fa4c0c0d31ef158710b0dd77f286a5b23e",
+          "binarySha256": "01a840f3e077b6a6d2566d82450a1e73f9f95c782c33fde0048d8d40f5e1c5f6"
+        },
+        "darwin-x86_64": {
+          "format": "tar.gz",
+          "strip": "python",
+          "url": "https://install.axiomlayer.com/runtime/python/3.14.7+20260901/cpython-x86_64-apple-darwin-install_only.tar.gz",
+          "sha256": "dd8841a2e8ef94bd1a02b52f92843120942140f112145d4e0199abab56f120b1",
+          "binarySha256": "01deab87480f8af479703aa7e8f00a0d27ad4bc95ac1ad11b2375235accdcb69"
+        },
+        "linux-aarch64": {
+          "format": "tar.gz",
+          "strip": "python",
+          "url": "https://install.axiomlayer.com/runtime/python/3.14.7+20260901/cpython-aarch64-linux-gnu-install_only.tar.gz",
+          "sha256": "30f1cc489be654477d895b441e196bb080738bf0456da82080ad4ab66a22d80f",
+          "binarySha256": "566f5e480aa1adccd3214f6251f50cab08daf768158d778fd9a73d19ab1fe001"
+        },
+        "linux-x86_64": {
+          "format": "tar.gz",
+          "strip": "python",
+          "url": "https://install.axiomlayer.com/runtime/python/3.14.7+20260901/cpython-x86_64-linux-gnu-install_only.tar.gz",
+          "sha256": "0ab3305457051cd3e7c031857e005f1bda17c218a1990567dacaaac6dd1d14f0",
+          "binarySha256": "8dfa9757a52b9c3edf1dedaaa2a7a8c40ea4beb058f20e90bdd47b48f3b1b176"
+        },
+        "windows-aarch64": {
+          "format": "tar.gz",
+          "strip": "python",
+          "url": "https://install.axiomlayer.com/runtime/python/3.14.7+20260901/cpython-aarch64-windows-msvc-install_only.tar.gz",
+          "sha256": "5efa2548bf1248ca07ed6f8afb0cb52b83d4869d533ea5be919a989c8ee1b17c",
+          "binarySha256": "54f9901da8ff6565bebbe3b75f085aa76d0b8840e5ab9de9c27d9b3bd379ed8b"
+        },
+        "windows-x86_64": {
+          "format": "tar.gz",
+          "strip": "python",
+          "url": "https://install.axiomlayer.com/runtime/python/3.14.7+20260901/cpython-x86_64-windows-msvc-install_only.tar.gz",
+          "sha256": "5d9242012dded591d723a3a572dda265173ad58d8a3e6fdbc6dac8f94f36c80a",
+          "binarySha256": "703536cd5d48b90407300079f490247e81244057652895d5a60df1e7d2991962"
+        }
+      }
+    },
+    "go": {
+      "version": "1.27.1",
+      "assets": {
+        "darwin-aarch64": {
+          "format": "tar.gz",
+          "strip": "go",
+          "url": "https://install.axiomlayer.com/runtime/go/1.27.1/go1.27.1.darwin-arm64.tar.gz",
+          "sha256": "ee215d57e0ec269c60cc9ceca68e6bda321ba9ee5afe24f4b0988703c2d87d12",
+          "binarySha256": "132b69336a1f809932a8a20b0201dbbb980e86e3a323ae32e893639d83d71598"
+        },
+        "darwin-x86_64": {
+          "format": "tar.gz",
+          "strip": "go",
+          "url": "https://install.axiomlayer.com/runtime/go/1.27.1/go1.27.1.darwin-amd64.tar.gz",
+          "sha256": "8f8f52c6649542cf027bbc9b9c68d1ec042f9f34808a40413f0b8b3f66f3caa4",
+          "binarySha256": "285418143831d996755c236ca0938ad317b22edeeb1d61bfa082f50550399fe3"
+        },
+        "linux-aarch64": {
+          "format": "tar.gz",
+          "strip": "go",
+          "url": "https://install.axiomlayer.com/runtime/go/1.27.1/go1.27.1.linux-arm64.tar.gz",
+          "sha256": "3450b45a3f9ee8568792736a5c5e70a1f2e9b36c35a8f74958c03e51d7d92bec",
+          "binarySha256": "1675694ef690db0f18fbe7046a886170904bede1d9db6ec96ae27945c1705c64"
+        },
+        "linux-x86_64": {
+          "format": "tar.gz",
+          "strip": "go",
+          "url": "https://install.axiomlayer.com/runtime/go/1.27.1/go1.27.1.linux-amd64.tar.gz",
+          "sha256": "63d339f0da5ab53635a56f2490a7984dfe12dfcff22ad749f63edaf590168445",
+          "binarySha256": "30969f97169d7f43fe6a085873d75613adc21e30818a8c61d95bd27275df4624"
+        },
+        "windows-aarch64": {
+          "format": "zip",
+          "strip": "go",
+          "url": "https://install.axiomlayer.com/runtime/go/1.27.1/go1.27.1.windows-arm64.zip",
+          "sha256": "13b69b87bb0e83f96bc68560a8cace7f0343b1e03469f1110ea18d17e3234069",
+          "binarySha256": "854e5383bc5d7fa3f3a58268a3c1ca45d9ddc1ec3f34b53f4234fd6b59e79a46"
+        },
+        "windows-x86_64": {
+          "format": "zip",
+          "strip": "go",
+          "url": "https://install.axiomlayer.com/runtime/go/1.27.1/go1.27.1.windows-amd64.zip",
+          "sha256": "a3911b5e0e1b1053f25ed0675f4c1c6aad1e2bfcf253df2b9be4caabd2edd95d",
+          "binarySha256": "d3ccdb604eafa6031133aefe1a3db24f0bb7362b857bc2125ac4e4c178b4b490"
+        }
+      }
+    },
+    "ripgrep": {
+      "version": "15.2.0",
+      "binary": "rg",
+      "assets": {
+        "darwin-aarch64": {
+          "format": "tar.gz",
+          "strip": "ripgrep-15.2.0-aarch64-apple-darwin",
+          "url": "https://install.axiomlayer.com/runtime/ripgrep/15.2.0/ripgrep-aarch64-apple-darwin.tar.gz",
+          "sha256": "3750b2e93f37e0c692657da574d7019a101c0084da05a790c83fd335bad973e4",
+          "binarySha256": "a326a1fb48074202e9ad41e4cd1e389eeea372c8c6f7d7e80da81176d5d9430e"
+        },
+        "darwin-x86_64": {
+          "format": "tar.gz",
+          "strip": "ripgrep-15.2.0-x86_64-apple-darwin",
+          "url": "https://install.axiomlayer.com/runtime/ripgrep/15.2.0/ripgrep-x86_64-apple-darwin.tar.gz",
+          "sha256": "af7825fcc69a2afc7a7aea55fc9af90e26421d8f20fe59df32e233c0b8a231c1",
+          "binarySha256": "0c9a0066db0d26b640777db88045b0ccdd58509a746700e43e1c4ff8707a5ed0"
+        },
+        "linux-aarch64": {
+          "format": "tar.gz",
+          "strip": "ripgrep-15.2.0-aarch64-unknown-linux-gnu",
+          "url": "https://install.axiomlayer.com/runtime/ripgrep/15.2.0/ripgrep-aarch64-linux-gnu.tar.gz",
+          "sha256": "a740b91c82eaf9914cfedd353572f2791cbe0162c84101ee0951058f4dcbc90d",
+          "binarySha256": "e36d0eb52e70696bdf1781392722e05a21bb91d3b7b762ef5ec20e5df2ec687b"
+        },
+        "linux-x86_64": {
+          "format": "tar.gz",
+          "strip": "ripgrep-15.2.0-x86_64-unknown-linux-musl",
+          "url": "https://install.axiomlayer.com/runtime/ripgrep/15.2.0/ripgrep-x86_64-linux-musl.tar.gz",
+          "sha256": "33e15bcf1624b25cdd2a55813a47a2f95dbe126268203e76aa6a585d1e7b149c",
+          "binarySha256": "e62198eb19b136b88c330af83647b5a962cb99b6b1f066758568f12de1974849"
+        },
+        "windows-aarch64": {
+          "format": "zip",
+          "strip": "ripgrep-15.2.0-aarch64-pc-windows-msvc",
+          "url": "https://install.axiomlayer.com/runtime/ripgrep/15.2.0/ripgrep-aarch64-windows-msvc.zip",
+          "sha256": "e4abca10c3a64ebea742667dd7009449d49403db5460dd6873e389fa2945360f",
+          "binarySha256": "d33a29a9ef03c9f4c03be9e8d88498e6e2d2e566d64cdbdef97f9afc8f13120c"
+        },
+        "windows-x86_64": {
+          "format": "zip",
+          "strip": "ripgrep-15.2.0-x86_64-pc-windows-msvc",
+          "url": "https://install.axiomlayer.com/runtime/ripgrep/15.2.0/ripgrep-x86_64-windows-msvc.zip",
+          "sha256": "71b2fef860abe467217a538ff31de02f5258807c0129f771846f87bd029aafc5",
+          "binarySha256": "14231169855ec5205cf5a1b6f1db358ff4aed4247c86b69ce8aae647c77f6680"
+        }
+      }
+    },
+    "sqlite": {
+      "version": "3.53.4",
+      "build": "3530400",
+      "requiredFeatures": ["ENABLE_FTS5"],
+      "assets": {
+        "darwin-aarch64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/sqlite/3.53.4/sqlite-tools-darwin-arm64.zip",
+          "sha256": "e56768d61017ab3dbd9ff5690b5551846d9945830fdc0b8a9610df722f05e33b",
+          "binarySha256": "a1c99e054f136fd03963a303d1c000338f0a51201991aba04411de886796c1de"
+        },
+        "darwin-x86_64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/sqlite/3.53.4/sqlite-tools-darwin-x86_64.zip",
+          "sha256": "76c187f19990c4a6fe9a4f8d01de038a63fc339aaf9d491202c9c56d058cb110",
+          "binarySha256": "212d96d4b5eb33f2490e5f2ce5a11d89a0f85132b97f93bb1cfc7e07154c2f14"
+        },
+        "linux-aarch64": {
+          "format": "tar.gz",
+          "provider": "source",
+          "strip": "sqlite-autoconf-3530400",
+          "url": "https://install.axiomlayer.com/runtime/sqlite/3.53.4/sqlite-autoconf-3530400.tar.gz",
+          "sha256": "0e9483900e92cd5de8fd48d16bf9200145a61f7fd5be542a5ac81d8a9516eb9c"
+        },
+        "linux-x86_64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/sqlite/3.53.4/sqlite-tools-linux-x86_64.zip",
+          "sha256": "7a6f4d1720e4bc13faa3d934bfce37b816a496c0a2480deacd64cfd8be6cf224",
+          "binarySha256": "435adbba6396c487cdf06c1f2546f8d548d90d5582254c31126279fb1f75ca64"
+        },
+        "windows-aarch64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/sqlite/3.53.4/sqlite-tools-windows-arm64.zip",
+          "sha256": "8a7c30165f6e9b054fbbe5ba6048acf23c967fd76955f7a5d66dc519542d3393",
+          "binarySha256": "2f428ef56ad970ce7ca816f888a39dc37235523ba3a1e73c3879d423ce7c54fa"
+        },
+        "windows-x86_64": {
+          "format": "zip",
+          "url": "https://install.axiomlayer.com/runtime/sqlite/3.53.4/sqlite-tools-windows-x86_64.zip",
+          "sha256": "f46ee2475de4cbe287e6e5f7d43c838796b14e7379cd216bdbb28d391429f9fc",
+          "binarySha256": "5da2398d4913b893bd1ea578d85403b3a83a06fabf9d2303ca9f63ef0849fc6f"
+        }
+      }
+    }
+  }
+}
